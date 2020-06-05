@@ -13,5 +13,5 @@ This is part of a research project with Prof. Andrew Bernoff, Prof. Jasper Weinb
 
 ```
 git clone https://github.com/ymaltsman/optimal-foraging.git
-pip install -e optimal-foraging
+
 ```

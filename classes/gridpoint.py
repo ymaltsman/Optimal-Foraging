@@ -10,7 +10,7 @@ class gridpoint:
         self.locusts += 1
     
     def loselocust(self):
-        self.locusts -+ 1
+        self.locusts -= 1
     
     def gainfood(self):
         self.resources += 1

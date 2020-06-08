@@ -2,7 +2,7 @@ import numpy as np
 class locust:
     #biological parameters. r is sensing range, K is gregarization threshold, and T is a time constant
     r=1
-    K=5
+    K=1
     T=10
     def __init__(self, place, group, phase = 0):
         """Each locust's state variables are location, amount of resources consumed, length walked, group (control = 0 or gregarizing = 1), phase (solitary=0 or gregarious = 1), 
@@ -21,23 +21,23 @@ class locust:
         else:
             self.sig = 1
 
-    def iterate(self, listoflocusts : list, time, row : list):
+    def iterate(self, listoflocusts, time, row):
         if self.place.hasfood():
             self.eat(row)
         else:
             self.move(listoflocusts, time, row)
     
-    def eat(self, row : list):
+    def eat(self, row):
         self.consumed += 1
-        row[self.location].losefood()
-        self.regenerate(row)
+        self.place.losefood()
+        #self.regenerate(row)
 
 
-    def move(self, listoflocusts : list, time, row : list):
+    def move(self, listoflocusts, time, row):
         """Updates location depending on the group and phase of the locust.
         For gregarizing, attracts/repels based on distance from other locusts
         """
-        row[self.location].loselocust()
+        self.place.loselocust()
         if self.group == 0:
             v=np.random.uniform()
             if v < .5:
@@ -58,10 +58,11 @@ class locust:
             else:
                 self.sig=-1
             self.location = (self.location + self.sig) % len(row)
+        self.place=row[self.location]
         self.walked += 1
-        row[self.location].newlocust()
+        self.place.newlocust()
     
-    def gregupdate(self, time, row : list):
+    def gregupdate(self, time, row):
         """treats gregarization as an exponentially decaying function which 'jumps'
         whenever contact is made"""
         t = time

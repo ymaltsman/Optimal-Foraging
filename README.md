@@ -1,13 +1,6 @@
 # Optimal-Foraging
 This is part of a research project with Prof. Andrew Bernoff, Prof. Jasper Weinburd, and other undergraduate students for the Mathematics department at Harvey Mudd College, investigating optimal foraging in locust swarms.
-<h3>Status 6/8 </h3>
-<p>Fixed a lot of bugs and came up with a few visualizations so far: </p>
-<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/locustsvslocation.png">
-<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/resources20iters.png">
-<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/phase100iters.png">
-<h3>Status 6/5</h3>
-<p>The rudimentary model seems to be up and running. The next step, I think, is to fit the model with biologically realistic parameters for things like sensing radius and gregarization threshold. Even without those, the model already shows some potentially interesting results. In this image, different colors represent different simulations. So it seems that there are numerous fixed points, and that the populations reach some kind of equilibrium within 6 or 7 generations.</p>
-<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/genalg2.png">
+
 <h2>Background</h2>
 <p> A striking characteristic of locusts is that when they are repeatedly stimulated by other locusts, they undergo a behavioural and physiological phase change in which they become gregarious. This gregarization is a neccessary component for destructive locust swarms to form, which can include millions of locusts flying in unison. </p>
 <h2>Description</h2>

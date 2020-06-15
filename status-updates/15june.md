@@ -30,4 +30,7 @@ def gregupdate(self, row):
  <p>which ensures that the contact level decays from its most recent level, rather than jumping down to where it would be after 
  t time steps with no contact.</p>
  <p>I'm working on visualizing gregarization steady states as a function of the gregarization threshold K. Here are some images I've generated:</p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/numlocusts.png">
+<p> Zooming in to the 40-50 range </p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/findingthresh.png">
  

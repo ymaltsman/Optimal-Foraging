@@ -1,41 +1,19 @@
 # Optimal-Foraging
 This is part of a research project with Prof. Andrew Bernoff, Prof. Jasper Weinburd, and other undergraduate students for the Mathematics department at Harvey Mudd College, investigating optimal foraging in locust swarms.
-<h3>Status Update for June 15th</h3>
-<p>I found that up until recently, the contact variable would update according to the following mechanism: </p>
-<pre><code> def gregupdate(self, time, row):
-        """treats gregarization as an exponentially decaying function which 'jumps'
-        whenever contact is made"""
-        t = time
-        T = locust.T
-        K = locust.K
-        self.contact=self.contact*np.exp(-t/T)
-        self.contact += self.place.getlocusts()
-        if self.phase == 0 and self.contact > K:
-            self.phase = 1
-        elif self.phase == 1 and self.contact < K/2:
-            self.phase = 0
-</code></pre>
-<p>where the input "time" is the time since the start of the generation. What I replaced this with was:</p>
-<pre><code>
-def gregupdate(self, row):
-        """treats gregarization as an exponentially decaying function which 'jumps'
-        whenever contact is made"""
-        T = locust.T
-        K = locust.K
-        self.contact=self.contact*np.exp(-1/T)
-        self.contact += self.place.getlocusts()
-        if self.phase == 0 and self.contact > K:
-            self.phase = 1
-        elif self.phase == 1 and self.contact < K/2:
-            self.phase = 0
- </code></pre>
- <p>which ensures that the contact level decays from its most recent level, rather than jumping down to where it would be after 
- t time steps with no contact.</p>
- <p>I'm working on visualizing gregarization steady states as a function of the gregarization threshold K. Here are some images I've generated:</p>
-<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/numlocusts.png">
-<p> Zooming in to the 40-50 range </p>
-<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/findingthresh.png">
- 
+
+<h3>Status update for June 16th</h3>
+<p>Some pictures generated, leading up to individual trajectories of locusts.</p>
+<p>This plot shows that after a long enough time period, for a low gregarization threshold, locusts move in a pulse.</p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/pulse.png">
+<p> With an extremely high threshold, the locusts movement remains random. </p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/nopulse.png">
+<p>An initial look at 10 locusts and their trajectories </p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/1community.png">
+<p>The following three charts depict the trajectories of thirty locusts under different thresholds.</p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/lines1.png">
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/lines40.png">
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/lines45.png">
+
 <h2>Background</h2>
 <p> A striking characteristic of locusts is that when they are repeatedly stimulated by other locusts, they undergo a behavioural and physiological phase change in which they become gregarious. This gregarization is a neccessary component for destructive locust swarms to form, which can include millions of locusts flying in unison. </p>
 <h2>Description</h2>

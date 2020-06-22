@@ -3,6 +3,15 @@ This is part of a research project with Prof. Andrew Bernoff, Prof. Jasper Weinb
 
 <h3>Status update for June 22nd</h3>
 * Added pause and go mechanism to model
+* Added stochastic element to movement for gregarized locusts
+* It seems like gregarized locusts now move in somewhat of a wide band
+* Changing # of locusts and gregarization threshold can cause degregerization and oscillation between different levels of gregerization
+<p>Instead of all of the locusts in the same place as before, they are now moving in the same direction but spread apart.</p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/alsomaybeband.png">
+Degregerization seems to occur as we vary the number of locusts and the gregarization threshold (first two images) but not when we change the probability of moving with the other locusts (third).
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/patterns.png">
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/Kchanges.png">
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/degregforp.png">
 <h2>Background</h2>
 <p> A striking characteristic of locusts is that when they are repeatedly stimulated by other locusts, they undergo a behavioural and physiological phase change in which they become gregarious. This gregarization is a neccessary component for destructive locust swarms to form, which can include millions of locusts flying in unison. </p>
 <h2>Description</h2>

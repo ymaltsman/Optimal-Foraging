@@ -1,8 +1,17 @@
 # Optimal-Foraging
 This is part of a research project with Prof. Andrew Bernoff, Prof. Jasper Weinburd, and other undergraduate students for the Mathematics department at Harvey Mudd College, investigating optimal foraging in locust swarms.
-<h3>Current Status</h3>
-<p>The rudimentary model seems to be up and running. The next step, I think, is to fit the model with biologically realistic parameters for things like sensing radius and gregarization threshold. Even without those, the model already shows some potentially interesting results. In this image, different colors represent different simulations. So it seems that there are numerous fixed points, and that the populations reach some kind of equilibrium within 6 or 7 generations.</p>
-<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/genalg2.png">
+
+<h3>Status update for June 22nd</h3>
+<h4>Added pause and go mechanism to model </h4>
+<h4> Added stochastic element to movement for gregarized locusts </h4>
+<h4> It seems like gregarized locusts now move in somewhat of a wide band </h4>
+<h4> Changing # of locusts and gregarization threshold can cause degregerization and oscillation between different levels of gregerization </h4>
+<p>Instead of all of the locusts in the same place as before, they are now moving in the same direction but spread apart.</p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/alsomaybeband.png">
+Degregerization seems to occur as we vary the number of locusts and the gregarization threshold (first two images) but not when we change the probability of moving with the other locusts (third). *Note that the second image should have the title "Change in gregarization based on gregarization threshold" not based on 'p'
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/patterns.png">
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/Kchanges.png">
+<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/degregforp.png">
 <h2>Background</h2>
 <p> A striking characteristic of locusts is that when they are repeatedly stimulated by other locusts, they undergo a behavioural and physiological phase change in which they become gregarious. This gregarization is a neccessary component for destructive locust swarms to form, which can include millions of locusts flying in unison. </p>
 <h2>Description</h2>
@@ -13,5 +22,5 @@ This is part of a research project with Prof. Andrew Bernoff, Prof. Jasper Weinb
 
 ```
 git clone https://github.com/ymaltsman/optimal-foraging.git
-pip install -e optimal-foraging
+
 ```

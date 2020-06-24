@@ -1,6 +1,7 @@
 import numpy as np
+np.random.seed(18)
 class gridpoint:
-    
+    R=50
     def __init__(self, location : int, numresources : int, numlocusts : int):
         self.location = location
         self.resources = numresources
@@ -10,7 +11,7 @@ class gridpoint:
         self.locusts += 1
     
     def loselocust(self):
-        self.locusts -+ 1
+        self.locusts -= 1
     
     def gainfood(self):
         self.resources += 1

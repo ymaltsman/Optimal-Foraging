@@ -133,7 +133,7 @@ def lines(iters, locusts = 30):
     plt.ylabel('position')
     plt.title(f'Trajectory of {locusts} locusts over {iters} iterations. Threshold: {locust.K}, {locust.N} locusts, {gridpoint.R} resources, probability of {locust.p}' )
     plt.show()
-lines(500000, 30)
+#lines(500000, 30)
 
 def meanvel(iters):
     o = simulate(1, iters, 1, 100, 50, 10, 0, 30)
@@ -157,6 +157,7 @@ def meanvel(iters):
 
 def meanphase(iters, R=50, L=30):
     fig, axs = plt.subplots(2)
+    locust.K=20
     o = simulate(1, iters, 1, 100, R, 10, 0, L)
     locustData = o[4]
     eff =[]
@@ -176,7 +177,7 @@ def meanphase(iters, R=50, L=30):
     axs[0].set_ylabel("Mean gregarization")
     fig.suptitle(f"Does mean foraging efficiency reach a steady state? Parameters: {iters} iterations, {R} resouces, {L} locusts on 1x100 grid, probability of {locust.p}, threshold of {locust.K}", wrap = True)
     plt.show()
-#meanphase(500000)
+meanphase(500000)
 
 
 def comparemeanphase(iters, ran=10):

@@ -8,7 +8,7 @@ import matplotlib.patheffects as path_effects
 import copy
 np.random.seed(18)
 
-def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff = 10, G = 30, genData = False):
+def simulate(gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 50, cutoff = 10, G = 30, genData = False):
     """
     Parameters
     --------------------------------
@@ -148,6 +148,13 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
 
                 for loc in locusts[r]:
                     loc.reset(grid[r])
+                
+                N = int(np.random.uniform()*locust.N)
+                for l in range(N,N+5):
+                    if l >= locust.N:
+                        l = l % locust.N
+                    d=-1+2*(np.random.binomial(1,.5))
+                    locusts[r][l].K += locusts[r][l].K*drift*d
 
         
             
@@ -156,12 +163,12 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
 
     return [locusts, grid, props, gridData, locustData]
 
-def plot(gens, iters, intervals):
-    o=simulate(gens, iters)[4]
+def plot(gens, iters, intervals, drift=.1):
+    o=simulate(gens, iters, drift)[4]
     fig, axs = plt.subplots(intervals)
     Ks=[]
     for g in range(gens):
-        if g % 5 == 0:
+        if g % (gens/intervals) == 0:
             Ks.append([x[0] for x in o[g][iters-1]])
     for i in range(intervals):
         axs[i].scatter(range(locust.N), Ks[i])
@@ -169,4 +176,4 @@ def plot(gens, iters, intervals):
     fig.suptitle(f"Changes in gregarization threshold over {gens} generations, {iters} iterations each. Params: {gridpoint.R} resources, {locust.N} locusts, probability of {locust.p}")
     plt.show()
 
-plot(50,20000, 10)
+plot(100,20000, 10)

@@ -8,7 +8,7 @@ import matplotlib.patheffects as path_effects
 import copy
 np.random.seed(18)
 
-def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff = 10, G = 30, genData = False):
+def simulate(gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 50, cutoff = 10, G = 30, genData = False):
     """
     Parameters
     --------------------------------
@@ -74,7 +74,7 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
         for g in range(G):
             x = int(np.random.uniform()*len(grid[i]))
             K=int(np.random.uniform()*50)
-            B=np.random.uniform*.5
+            B=np.random.uniform()*.5
             #x=rowlen//2
             placeg = grid[i][x]
             glocust=locust(placeg, 1, K, B)
@@ -151,14 +151,19 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
                 for loc in locusts[r]:
                     loc.reset(grid[r])
 
-        
+                N = int(np.random.uniform()*locust.N)
+                for l in range(N,N+5):
+                    if l >= locust.N:
+                        l = l % locust.N
+                    d=-1+2*(np.random.binomial(1,.5))
+                    locusts[r][l].K += locusts[r][l].K*drift*d
             
         
         
 
     return [locusts, grid, props, gridData, locustData]
 
-def plot(gens, iters, intervals):
+def plot(gens, iters, intervals, drift=.1):
     o=simulate(gens, iters)[4]
     fig, axs = plt.subplots(intervals)
     Ks=[]
@@ -166,10 +171,12 @@ def plot(gens, iters, intervals):
     for g in range(gens):
         if g % (gens/intervals) == 0:
             Ks.append([x[0] for x in o[g][iters-1]])
+            Bs.append([x[1] for x in o[g][iters-1]])
     for i in range(intervals):
-        axs[i].scatter(range(locust.N), Ks[i])
-        axs[i].set_ylabel("Threshold")
-    fig.suptitle(f"Changes in gregarization threshold over {gens} generations, {iters} iterations each. Params: {gridpoint.R} resources, {locust.N} locusts, probability of {locust.p}")
+        axs[i].scatter(Ks[i], Bs[i])
+        axs[i].set_ylabel("Ballisticity")
+        plt.xlabel("Threshold")
+    fig.suptitle(f"Changes in gregarization threshold and ballisticy over {gens} generations, {iters} iterations each. Params: {gridpoint.R} resources, {locust.N} locusts, probability of {locust.p}")
     plt.show()
 
 plot(50,20000, 10)

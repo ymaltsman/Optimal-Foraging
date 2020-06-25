@@ -31,7 +31,7 @@ class locust:
         self.phase=phase
         self.contact=contact
         self.efficiency = efficiency
-        self.motion = np.random.binomial(1,.5)
+        self.motion = 1 if np.random.uniform()<.5 else 0
         self.K=K
         if np.random.uniform() < .5:
             self.sig = -1
@@ -51,10 +51,10 @@ class locust:
         R=self.place.resources
         if self.motion == 0:
            p= locust.hsm - (locust.hsm - locust.lsm)*np.exp(-locust.esm*R)
-           self.motion = np.random.binomial(1,p)
+           self.motion = 1 if np.random.uniform()<p else 0
         else:
             p= locust.hms - (locust.hms - locust.lms)*np.exp(-locust.ems*R)
-            self.motion = np.random.binomial(1,p)
+            self.motion = 0 if np.random.uniform()<p else 1
 
 
     
@@ -79,7 +79,7 @@ class locust:
             else:
                 self.location = (self.location + 1) % locust.rowlen
         else:
-            if np.random.binomial(1,locust.p) == 1:
+            if np.random.uniform()<locust.p:
                 a=0
                 xlist = np.exp((-1/locust.r)*np.absolute(np.array([x.location for x in listoflocusts])-np.full((1,locust.N),self.location)))
                 a = np.sum(xlist)
@@ -132,7 +132,7 @@ class locust:
         self.consumed=0
         self.walked=0.01
         self.contact=1
-        self.motion = np.random.binomial(1,.5)
+        self.motion = 1 if np.random.uniform()<.5 else 0
         self.getefficiency()
     
 

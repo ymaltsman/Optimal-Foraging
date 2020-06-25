@@ -176,4 +176,4 @@ def plot(gens, iters, intervals, drift=.1):
     fig.suptitle(f"Changes in gregarization threshold over {gens} generations, {iters} iterations each. Params: {gridpoint.R} resources, {locust.N} locusts, probability of {locust.p}")
     plt.show()
 
-plot(100,20000, 10)
+plot(10,2000, 5)

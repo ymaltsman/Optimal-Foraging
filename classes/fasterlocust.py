@@ -19,7 +19,7 @@ class locust:
     ems=.005
     #probability of moving according to gregarization rules
     p=.6
-    def __init__(self, place, group, K, phase = 0, contact=1, efficiency = 0):
+    def __init__(self, place, group, K, B, phase = 0, contact=1, efficiency = 0):
         """Each locust's state variables are location, amount of resources consumed, length walked, group (control = 0 or gregarizing = 1), phase (solitary=0 or gregarious = 1), 
         contact level, and orientation (1 or -1)
         """
@@ -33,6 +33,7 @@ class locust:
         self.efficiency = efficiency
         self.motion = np.random.binomial(1,.5)
         self.K=K
+        self.B=B
         if np.random.uniform() < .5:
             self.sig = -1
         else:
@@ -74,7 +75,7 @@ class locust:
             self.gregupdate(time, row)
         if self.group == 0 or self.phase == 0:
             v=np.random.uniform()
-            if v < .5:
+            if v < self.B:
                 self.location = (self.location - 1) % locust.rowlen
             else:
                 self.location = (self.location + 1) % locust.rowlen

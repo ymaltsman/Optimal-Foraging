@@ -74,9 +74,10 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
         for g in range(G):
             x = int(np.random.uniform()*len(grid[i]))
             K=int(np.random.uniform()*50)
+            B=np.random.uniform*.5
             #x=rowlen//2
             placeg = grid[i][x]
-            glocust=locust(placeg, 1, K)
+            glocust=locust(placeg, 1, K, B)
             locustr.append(glocust)
             placeg.newlocust()
         locusts.append(locustr)
@@ -104,7 +105,7 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
         #run through a single gen
         for i in range(iters):
             gridr.append([x.locusts for x in grid[0]])
-            locustr.append([[l.K] for l in locusts[0]])
+            locustr.append([[l.K, l.B] for l in locusts[0]])
             for r in range(len(locusts)):
                 for l in range(len(locusts[r])):
                     locusts[r][l].iterate(locusts[r], i, grid[r])
@@ -134,6 +135,7 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
                             best = copy.deepcopy(locusts[r][j])
                             bindex=j
                     worst.K = best.K
+                    worst.B = best.B
                     worst.phase=best.phase
                     worst.contact=best.contact
                     worst.consumed=best.consumed
@@ -160,8 +162,9 @@ def plot(gens, iters, intervals):
     o=simulate(gens, iters)[4]
     fig, axs = plt.subplots(intervals)
     Ks=[]
+    Bs=[]
     for g in range(gens):
-        if g % 5 == 0:
+        if g % (gens/intervals) == 0:
             Ks.append([x[0] for x in o[g][iters-1]])
     for i in range(intervals):
         axs[i].scatter(range(locust.N), Ks[i])

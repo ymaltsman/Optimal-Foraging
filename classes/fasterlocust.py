@@ -131,6 +131,8 @@ class locust:
         self.place.newlocust()
         self.consumed=0
         self.walked=0.01
+        self.contact=1
+        self.motion = np.random.binomial(1,.5)
         self.getefficiency()
     
 

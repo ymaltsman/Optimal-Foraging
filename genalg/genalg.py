@@ -1,9 +1,14 @@
 import numpy as np
+import sys
+sys.path.insert(1,"C:\\Users\\yoni\\optimal-foraging\\classes")
 from fasterlocust import locust
 from gridpoint import gridpoint
+import matplotlib.pyplot as plt
+import matplotlib.patheffects as path_effects
+import copy
 np.random.seed(18)
 
-def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff = 60, G = 30, genData = False):
+def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff = 10, G = 30, genData = False):
     """
     Parameters
     --------------------------------
@@ -24,7 +29,7 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
     gridData: returns generational level grid data if set to true
     """
 
-    locust.N=C+G
+    locust.N=G
     locust.rowlen=rowlen
     gridpoint.R = R
     #set up grid
@@ -71,7 +76,7 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
             K=int(np.random.uniform()*50)
             #x=rowlen//2
             placeg = grid[i][x]
-            glocust=locust(placeg,1)
+            glocust=locust(placeg, 1, K)
             locustr.append(glocust)
             placeg.newlocust()
         locusts.append(locustr)
@@ -99,7 +104,7 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
         #run through a single gen
         for i in range(iters):
             gridr.append([x.locusts for x in grid[0]])
-            locustr.append([[l.location, l.contact, l.sig, l.phase, l.getefficiency(), l.consumed, l.walked, l.group] for l in locusts[0]])
+            locustr.append([[l.K] for l in locusts[0]])
             for r in range(len(locusts)):
                 for l in range(len(locusts[r])):
                     locusts[r][l].iterate(locusts[r], i, grid[r])
@@ -110,36 +115,58 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
                 
                 #remove the worst performing locusts and replace them with the 'offspring' of the best locusts
                 for n in range(cutoff):
-                    min = locusts[r][0].getefficiency()
-                    worst = locusts[r][0]
-                    for l in range(len(locusts[r])):
+                    min = locusts[r][2*n].getefficiency()
+                    worst = locusts[r][2*n]
+                    windex=2*n
+                    for l in range(len(locusts[r])-(2*n)):
+                        l=l+(2*n)
                         if locusts[r][l].getefficiency() < min:
                             min = locusts[r][l].getefficiency()
-                            worst = locusts[r][l]
-                    max = locusts[r][0].getefficiency()
-                    best = locusts[r][0]
-                    for l in range(len(locusts[r])):
-                        if locusts[r][l].getefficiency() > max:
-                            max = locusts[r][l].getefficiency()
-                            best = locusts[r][l]
-                    worst.group = best.group
+                            worst = copy.deepcopy(locusts[r][l])
+                            windex=l
+                    max = locusts[r][2*n].getefficiency()
+                    best = locusts[r][2*n]
+                    bindex=2*n
+                    for j in range(len(locusts[r])-(2*n)):
+                        j=j+(2*n)
+                        if locusts[r][j].getefficiency() > max:
+                            max = locusts[r][j].getefficiency()
+                            best = copy.deepcopy(locusts[r][j])
+                            bindex=j
+                    worst.K = best.K
                     worst.phase=best.phase
                     worst.contact=best.contact
-                    worst.efficiency=best.getefficiency()
+                    worst.consumed=best.consumed
+                    worst.walked=best.walked
+                    worst.getefficiency()
+                    index=[bindex, windex]
+                    tmp = copy.deepcopy(locusts[r])
+                    tmp = np.delete(tmp, index)
+                    tmp = np.insert(tmp,0,best)
+                    tmp = np.insert(tmp,1,worst)
+                    locusts[r]=copy.deepcopy(tmp)
 
                 for loc in locusts[r]:
                     loc.reset(grid[r])
 
         
             
-            #updating proportion of gregarizing locusts
-        for r in range(len(locusts)):
-            for l in range(len(locusts[r])):
-                if locusts[r][l].group == 0:
-                    cont += 1
-                else:
-                    greg += 1
-        props.append(greg/locust.N)
+        
         
 
     return [locusts, grid, props, gridData, locustData]
+
+def plot(gens, iters, intervals):
+    o=simulate(gens, iters)[4]
+    fig, axs = plt.subplots(intervals)
+    Ks=[]
+    for g in range(gens):
+        if g % 5 == 0:
+            Ks.append([x[0] for x in o[g][iters-1]])
+    for i in range(intervals):
+        axs[i].scatter(range(locust.N), Ks[i])
+        axs[i].set_ylabel("Threshold")
+    fig.suptitle(f"Changes in gregarization threshold over {gens} generations, {iters} iterations each. Params: {gridpoint.R} resources, {locust.N} locusts, probability of {locust.p}")
+    plt.show()
+
+plot(50,20000, 10)

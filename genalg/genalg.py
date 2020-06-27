@@ -124,12 +124,17 @@ def simulate(gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 5
                             min = locusts[r][l].getefficiency()
                             worst = copy.deepcopy(locusts[r][l])
                             windex=l
-                    max = locusts[r][2*n].getefficiency()
-                    best = locusts[r][2*n]
-                    bindex=2*n
+                    if windex != 2*n:
+                        max = locusts[r][2*n].getefficiency()
+                        best = locusts[r][2*n]
+                        bindex=2*n
+                    else:
+                        max = locusts[r][(2*n)+1].getefficiency()
+                        best = locusts[r][(2*n)+1]
+                        bindex=(2*n)+1
                     for j in range(len(locusts[r])-(2*n)):
                         j=j+(2*n)
-                        if locusts[r][j].getefficiency() > max:
+                        if locusts[r][j].getefficiency() > max and j != windex:
                             max = locusts[r][j].getefficiency()
                             best = copy.deepcopy(locusts[r][j])
                             bindex=j
@@ -163,17 +168,20 @@ def simulate(gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 5
 
     return [locusts, grid, props, gridData, locustData]
 
-def plot(gens, iters, intervals, drift=.1):
-    o=simulate(gens, iters, drift)[4]
-    fig, axs = plt.subplots(intervals)
-    Ks=[]
-    for g in range(gens):
-        if g % (gens/intervals) == 0:
-            Ks.append([x[0] for x in o[g][iters-1]])
-    for i in range(intervals):
-        axs[i].scatter(range(locust.N), Ks[i])
-        axs[i].set_ylabel("Threshold")
-    fig.suptitle(f"Changes in gregarization threshold over {gens} generations, {iters} iterations each. Params: {gridpoint.R} resources, {locust.N} locusts, probability of {locust.p}")
+def plot(gens, iters, intervals, ran, drift=.1):
+    fig, axs = plt.subplots(intervals, ran)
+    for r in range(ran):
+        R=int(50*(1/(1+r)))
+        o=simulate(gens, iters, drift, R=R)[4]
+        Ks=[]
+        for g in range(gens):
+            if g % (gens/intervals) == 0:
+                Ks.append([x[0] for x in o[g][iters-1]])
+        for i in range(intervals):
+            axs[i][r].scatter(range(locust.N), Ks[i])
+            axs[i][r].set_ylabel("Threshold")
+            axs[i][r].set_title(f"generation {i*(gens/intervals)}, R={R}")
+    fig.suptitle(f"Changes in gregarization threshold over {gens} generations with changing resources, {iters} iterations each. Params: {locust.N} locusts, probability of {locust.p}")
     plt.show()
 
-plot(10,2000, 5)
+plot(50,20000, 5, 4)

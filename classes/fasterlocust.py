@@ -88,7 +88,7 @@ class locust:
                 else:
                     self.sig=-1
             else:
-                self.sig=-1+2*(np.random.binomial(1,.5))
+                self.sig=-1+2*(np.random.binomial(1,.5)) 
             self.location = (self.location + self.sig) % locust.rowlen
         self.place=row[self.location]
         self.walked += 1

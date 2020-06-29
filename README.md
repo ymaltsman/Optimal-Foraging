@@ -1,17 +1,17 @@
 # Optimal-Foraging
 This is part of a research project with Prof. Andrew Bernoff, Prof. Jasper Weinburd, and other undergraduate students for the Mathematics department at Harvey Mudd College, investigating optimal foraging in locust swarms.
 
-<h3> Status update for June 24th </h3>
-<p> I've worked on optimizing K, the gregarization threshold, through Bayesian Optimization and a genetic algorithm. Bayesian Optimization over 52 values of
-K yielded the following results, which seemed to indicate a) foraging efficiency is optimized for minimal values of K and b) foraging efficiency varies significantly for 
-minimal values of K. </p>
-<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/bayes1.png">
-Note, however, that this optimization ran simulations of 20,000 iterations each. Foraging efficiency does not reach a steady state until much later, at least for a gregerization threshold
-of 10. In this plot it seems as though foraging efficiency climbs after gregarization is reached, after which it eventually reaches a steady state. We also know that increasing the gregarization 
-threshold makes the locusts take a longer time to gregarize, so we'd expect that they would reach their steady state efficiency later as well.
-<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/effpostgreg.png">
-Initial results from the genetic algorithm seem to support that lower gregarization thresholds are favorable for foraging efficiency.
-<img src="https://github.com/ymaltsman/Optimal-Foraging/blob/master/imgs/convergence.png">
+<h3>Status Update for 29th June</h3>
+<p>Last time we generated the following image, which gave us the idea that a low threshold wins out in the evolutionary algorithm.</p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/convergence.png">
+<p>However, doing five simulations (with the same initial conditions) seems to tell a more scattered story: </p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/scatter.png">
+<p> There are a couple insights that we can look into further for this. In each simulation, the evolution at least converges to some range of threshold (25-30, 8-12, ~60, etc.)</p>
+<p> I also looked into how the genetic algorithm evolves as a function of resources, which is inconclusive for now but might point in some interesting directions: </p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/databoy.png">
+<p> In addition, I looked into whether increased performance with lower gregarization threshold might have to do with ballisticity instead, so I let both ballisticity and gregarization 
+threshold be independant variables, and it seems like the population converges to lower ballisticity rather than lower threshold.</p>
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/lowerball.png">
 
 <h2>Background</h2>
 <p> A striking characteristic of locusts is that when they are repeatedly stimulated by other locusts, they undergo a behavioural and physiological phase change in which they become gregarious. This gregarization is a neccessary component for destructive locust swarms to form, which can include millions of locusts flying in unison. </p>

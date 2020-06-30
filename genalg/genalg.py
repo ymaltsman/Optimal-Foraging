@@ -154,12 +154,11 @@ def simulate(gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 5
                 for loc in locusts[r]:
                     loc.reset(grid[r])
                 
-                N = int(np.random.uniform()*locust.N)
-                for l in range(N,N+5):
-                    if l >= locust.N:
-                        l = l % locust.N
-                    d=-1+2*(np.random.binomial(1,.5))
-                    locusts[r][l].K += locusts[r][l].K*drift*d
+                for l in range(locust.N):
+                    g=np.random.normal(locusts[r][l].K, drift)
+                    if g <0:
+                        g=0
+                    locusts[r][l].K = g
 
         
             
@@ -168,10 +167,10 @@ def simulate(gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 5
 
     return [locusts, grid, props, gridData, locustData]
 
-def plot(gens, iters, intervals, ran, drift=.1):
+def multplot(gens, iters, intervals, ran, drift=.1):
     fig, axs = plt.subplots(intervals, ran)
     for r in range(ran):
-        R=int(50*(1/(1+r)))
+        R=50
         o=simulate(gens, iters, drift, R=R)[4]
         Ks=[]
         for g in range(gens):
@@ -180,8 +179,22 @@ def plot(gens, iters, intervals, ran, drift=.1):
         for i in range(intervals):
             axs[i][r].scatter(range(locust.N), Ks[i])
             axs[i][r].set_ylabel("Threshold")
-            axs[i][r].set_title(f"generation {i*(gens/intervals)}, R={R}")
-    fig.suptitle(f"Changes in gregarization threshold over {gens} generations with changing resources, {iters} iterations each. Params: {locust.N} locusts, probability of {locust.p}")
+            axs[i][r].set_title(f"generation {i*(gens/intervals)}")
+    fig.suptitle(f"Variation in simulations. {gens} generations, {iters} iterations each. Params: {locust.N} locusts, probability of {locust.p}")
     plt.show()
 
-plot(50,20000, 5, 4)
+def singplot(gens, iters, intervals, drift=.05):
+    fig, axs = plt.subplots(intervals)
+    o=simulate(gens, iters, drift)[4]
+    Ks=[]
+    for g in range(gens):
+        if g % (gens/intervals) == 0:
+            Ks.append([x[0] for x in o[g][iters-1]])
+    for i in range(intervals):
+        axs[i].scatter(range(locust.N), Ks[i])
+        axs[i].set_ylabel(f"generation {(i+1)*(gens/intervals)}")
+    axs.set_ylim([0,80])
+    fig.suptitle(f"Change in threshold over {gens} generations, {iters} iterations each. Params: {locust.N} locusts, probability of {locust.p}")
+    plt.show()
+#function to run    
+multplot(50,2000, 5,4)

@@ -7,8 +7,9 @@ import matplotlib.pyplot as plt
 import matplotlib.patheffects as path_effects
 import copy
 np.random.seed(18)
+import json
 
-def simulate(gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 50, cutoff = 10, G = 30, genData = False):
+def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 50, cutoff = 10, G = 30, genData = False):
     """
     Parameters
     --------------------------------
@@ -73,7 +74,10 @@ def simulate(gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 5
         locustr=[]
         for g in range(G):
             x = int(np.random.uniform()*len(grid[i]))
-            K=int(np.random.uniform()*50)
+            if len(Ks) == 0:
+                K=int(np.random.uniform()*50)
+            else:
+                K=Ks[g]
             #x=rowlen//2
             placeg = grid[i][x]
             glocust=locust(placeg, 1, K)
@@ -155,7 +159,7 @@ def simulate(gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 5
                     loc.reset(grid[r])
                 
                 for l in range(locust.N):
-                    g=np.random.normal(locusts[r][l].K, drift)
+                    g=np.random.normal(locusts[r][l].K, locusts[r][l].K*drift)
                     if g <0:
                         g=0
                     locusts[r][l].K = g
@@ -167,25 +171,41 @@ def simulate(gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 5
 
     return [locusts, grid, props, gridData, locustData]
 
-def multplot(gens, iters, intervals, ran, drift=.1):
+def multplot(gens, iters, intervals, ran, load = 0, drift=.1):
     fig, axs = plt.subplots(intervals, ran)
+    Ks=[]
+    if load == 1:
+        with open('genalgdata.txt', 'r') as filehandle:
+            Ks=json.load(filehandle)
+    klist=[]
     for r in range(ran):
         R=50
-        o=simulate(gens, iters, drift, R=R)[4]
-        Ks=[]
+        if len(Ks)>0:
+            o=simulate(Ks[r-5], gens, iters, drift, R=R)[4]
+        else:
+            o=simulate(Ks, gens, iters, drift)[4]
+        Kstr=[]
         for g in range(gens):
             if g % (gens/intervals) == 0:
-                Ks.append([x[0] for x in o[g][iters-1]])
+                Kstr.append([x[0] for x in o[g][iters-1]])
         for i in range(intervals):
-            axs[i][r].scatter(range(locust.N), Ks[i])
+            axs[i][r].scatter(range(locust.N), Kstr[i])
             axs[i][r].set_ylabel("Threshold")
             axs[i][r].set_title(f"generation {i*(gens/intervals)}")
-    fig.suptitle(f"Variation in simulations. {gens} generations, {iters} iterations each. Params: {locust.N} locusts, probability of {locust.p}")
+        klist.append(Kstr[intervals-1])
+    plt.setp(axs, ylim=(0,80))
+    with open('genalgdata.txt', 'w') as filehandle:
+        json.dump(klist, filehandle)
+    fig.suptitle(f"Variation in simulations. {gens} generations, {iters} iterations each. Params: {locust.N} locusts, probability of {locust.p}, drift of {drift}")
     plt.show()
 
-def singplot(gens, iters, intervals, drift=.05):
+def singplot(gens, iters, intervals, load=0, drift=.05):
     fig, axs = plt.subplots(intervals)
-    o=simulate(gens, iters, drift)[4]
+    Ks=[]
+    if load == 1:
+        with open('genalgdata.txt', 'r') as filehandle:
+            Ks=json.load(filehandle)[3]
+    o=simulate(Ks, gens, iters, drift)[4]
     Ks=[]
     for g in range(gens):
         if g % (gens/intervals) == 0:
@@ -193,8 +213,14 @@ def singplot(gens, iters, intervals, drift=.05):
     for i in range(intervals):
         axs[i].scatter(range(locust.N), Ks[i])
         axs[i].set_ylabel(f"generation {(i+1)*(gens/intervals)}")
-    axs.set_ylim([0,80])
+    newKs = Ks[intervals-1]
+    plt.setp(axs, ylim=(0,80))
+    with open('singenalgdata.txt', 'w') as filehandle:
+        json.dump(newKs, filehandle)
     fig.suptitle(f"Change in threshold over {gens} generations, {iters} iterations each. Params: {locust.N} locusts, probability of {locust.p}")
     plt.show()
+
+
 #function to run    
-multplot(50,2000, 5,4)
+#multplot(1200, 2000, 3, 10, 1, .05)
+

@@ -1,4 +1,6 @@
 import numpy as np
+import sys
+sys.path.insert(1,"C:\\Users\\yoni\\optimal-foraging\\classes")
 from fasterlocust import locust
 from gridpoint import gridpoint
 np.random.seed(18)

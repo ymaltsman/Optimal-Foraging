@@ -10,7 +10,7 @@ This is part of a research project with Prof. Andrew Bernoff, Prof. Jasper Weinb
 <p>Similarly, five simulations with 100 resources. The first 25 generations:</p>
 <img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/hrun01.png">
 <p>And after about 300 generations:</p>
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/hrun03.png">
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/hrun3.png">
 
 <h2>Background</h2>
 <p> A striking characteristic of locusts is that when they are repeatedly stimulated by other locusts, they undergo a behavioural and physiological phase change in which they become gregarious. This gregarization is a neccessary component for destructive locust swarms to form, which can include millions of locusts flying in unison. </p>

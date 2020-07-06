@@ -148,7 +148,6 @@ def simulate(gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cutoff 
                 else:
                     greg += 1
         props.append(greg/locust.N)
-        
 
     return [locusts, grid, props, gridData, locustData]
 

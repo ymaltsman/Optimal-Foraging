@@ -96,14 +96,14 @@ def simulate(K, gens = 1, iters = 20000, numrows = 1, rowlen = 100, R = 50, cuto
         
         #run through a single gen
         for i in range(iters):
-            locustr.append([l.getefficiency() for l in locusts[0]])
+            locustr.append([[l.getefficiency(), l.phase] for l in locusts[0]])
             for r in range(len(locusts)):
                 for l in range(len(locusts[r])):
                     locusts[r][l].iterate(locusts[r], i, grid[r])
         locustData.append(locustr)
     
-    
-    return np.average(locustData[0][iters-1])
+    return locustData
+    #return np.average(locustData[0][iters-1])
 
 
 from bayes_opt import BayesianOptimization
@@ -111,26 +111,28 @@ from bayes_opt.logger import JSONLogger
 from bayes_opt.event import Events
 from bayes_opt.util import load_logs
 
+def idk():
+    """ don't wanna run this right now
+    pbounds = {'K': (0, 100)}
+    optimizer = BayesianOptimization(
+    f=simulate,
+    pbounds=pbounds,
+    verbose=2, # verbose = 1 prints only when a maximum is observed, verbose = 0 is silent
+    random_state=1,
+    )
 
-pbounds = {'K': (0, 100)}
-optimizer = BayesianOptimization(
-f=simulate,
-pbounds=pbounds,
-verbose=2, # verbose = 1 prints only when a maximum is observed, verbose = 0 is silent
-random_state=1,
-)
+    # New optimizer is loaded with previously seen points
+    load_logs(optimizer, logs=["./logs.json"])
 
-# New optimizer is loaded with previously seen points
-load_logs(optimizer, logs=["./logs.json"])
-
-logger = JSONLogger(path="./logs.json")
-optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
+    logger = JSONLogger(path="./logs.json")
+    optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
 
 
-optimizer.maximize(
-init_points=5,
-n_iter=10,
-)
+    optimizer.maximize(
+    init_points=5,
+    n_iter=10,
+    )
+    """
 
 
 

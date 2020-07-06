@@ -107,8 +107,8 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 10
         
         #run through a single gen
         for i in range(iters):
-            gridr.append([x.locusts for x in grid[0]])
-            locustr.append([[l.K] for l in locusts[0]])
+            gridr.append([x.resources for x in grid[0]])
+            locustr.append([[l.K, l.getefficiency()] for l in locusts[0]])
             for r in range(len(locusts)):
                 for l in range(len(locusts[r])):
                     locusts[r][l].iterate(locusts[r], i, grid[r])
@@ -168,7 +168,6 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 10
             
         
         
-
     return [locusts, grid, props, gridData, locustData]
 
 def multplot(gens, iters, intervals, ran, load = 0, drift=.1):
@@ -178,16 +177,19 @@ def multplot(gens, iters, intervals, ran, load = 0, drift=.1):
         with open('genalgdata.txt', 'r') as filehandle:
             Ks=json.load(filehandle)
     klist=[]
+    elist = []
     for r in range(ran):
-        R=50
+        R=100
         if len(Ks)>0:
             o=simulate(Ks[r-5], gens, iters, drift, R=R)[4]
         else:
-            o=simulate(Ks, gens, iters, drift)[4]
+            o=simulate(Ks, gens, iters, drift, R=R)[4]
         Kstr=[]
+        effs = []
         for g in range(gens):
             if g % (gens/intervals) == 0:
                 Kstr.append([x[0] for x in o[g][iters-1]])
+                #effs.append([x[1] for x in o[g][iters-1]])
         for i in range(intervals):
             axs[i][r].scatter(range(locust.N), Kstr[i])
             axs[i][r].set_ylabel("Threshold")
@@ -196,25 +198,31 @@ def multplot(gens, iters, intervals, ran, load = 0, drift=.1):
     plt.setp(axs, ylim=(0,80))
     with open('genalgdata.txt', 'w') as filehandle:
         json.dump(klist, filehandle)
-    fig.suptitle(f"Variation in simulations. {gens} generations, {iters} iterations each. Params: {locust.N} locusts, probability of {locust.p}, drift of {drift}")
+    fig.suptitle(f"Variation in simulations. {gens} generations, {iters} iterations each. Params: {locust.N} locusts, {gridpoint.R} resources, probability of {locust.p}, drift of {drift}")
     plt.show()
 
+def takeSecond(elem):
+    return elem[1]
+
 def singplot(gens, iters, intervals, load=0, drift=.05):
-    fig, axs = plt.subplots(intervals)
+    fig, axs = plt.subplots(intervals, 2)
     Ks=[]
+    Es=[]
     if load == 1:
-        with open('genalgdata.txt', 'r') as filehandle:
-            Ks=json.load(filehandle)[3]
+        with open('singenalgdata.txt', 'r') as filehandle:
+            Ks=json.load(filehandle)
     o=simulate(Ks, gens, iters, drift)[4]
-    Ks=[]
+    o=np.array(o)
+    o = np.sort(o, axis=1)
     for g in range(gens):
         if g % (gens/intervals) == 0:
             Ks.append([x[0] for x in o[g][iters-1]])
+            Es.append([x[1] for x in o[g][iters-1]])
     for i in range(intervals):
-        axs[i].scatter(range(locust.N), Ks[i])
-        axs[i].set_ylabel(f"generation {(i+1)*(gens/intervals)}")
+        axs[i][0].scatter(range(locust.N), Ks[i])
+        axs[i][1].scatter(range(locust.N), Es[i])
+        axs[i][0].set_ylabel(f"generation {(i+1)*(gens/intervals)}")
     newKs = Ks[intervals-1]
-    plt.setp(axs, ylim=(0,80))
     with open('singenalgdata.txt', 'w') as filehandle:
         json.dump(newKs, filehandle)
     fig.suptitle(f"Change in threshold over {gens} generations, {iters} iterations each. Params: {locust.N} locusts, probability of {locust.p}")
@@ -222,5 +230,5 @@ def singplot(gens, iters, intervals, load=0, drift=.05):
 
 
 #function to run    
-#multplot(1200, 2000, 3, 10, 1, .05)
+multplot(250, 2000, 5, 5, 1)
 

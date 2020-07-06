@@ -120,7 +120,7 @@ class locust:
         row[m].gainfood()    
 
     def getefficiency(self):
-        self.efficiency=(self.consumed)/np.sqrt(self.walked)
+        self.efficiency=(self.consumed)/(self.walked)
         return self.efficiency
     
     def reset(self, row):

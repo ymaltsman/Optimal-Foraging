@@ -1,7 +1,11 @@
 import numpy as np
+import sys
+sys.path.insert(1,"C:\\Users\\yoni\\optimal-foraging\\classes")
+sys.path.insert(1,"C:\\Users\\yoni\\optimal-foraging\\bayesopt")
 from fasterlocust import locust
 from gridpoint import gridpoint
-from fastersimulate import simulate
+#from fastersimulate import simulate
+from bayesiansimulation import simulate
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as path_effects
 from mpl_toolkits.mplot3d import Axes3D
@@ -135,24 +139,23 @@ def lines(iters, locusts = 30):
     plt.show()
 #lines(500000, 30)
 
-def meanvel(iters):
-    o = simulate(1, iters, 1, 100, 50, 10, 0, 30)
-    locustData = o[4]
-    cons =[]
-    walked = []
+def meanvalue(iters, K):
+    locustData = simulate(K, 1, iters, 1, 100, 50, 10, 0, 30)
     eff = []
+    greg = []
     for i in range(iters):
-        toeff = np.average([x[4] for x in locustData[0][i]])
+        toeff = np.average([x[0] for x in locustData[0][i]])
         eff.append(toeff)
-        tocons= np.average([x[5] for x in locustData[0][i]])
-        cons.append(tocons)
-        towalk = np.average([x[6] for x in locustData[0][i]])
-        walked.append(towalk)
+        togreg = np.average([x[1] for x in locustData[0][i]])
+        greg.append(togreg)
     #plt.scatter(range(iters), cons, c='r')
     #plt.scatter(range(iters), walked, c='b')
-    plt.scatter(range(iters), eff, c='g')
+    plt.plot(range(iters), eff, c='g')
+    plt.scatter(range(iters), greg, c ='b')
+    plt.xlabel("iterations")
+    plt.title(f"Foraging efficiency/gregarization over time for gregarization threshold of {K}. {gridpoint.R} resources, {locust.N} locusts. Foraging efficiency is green and gregarization is blue", wrap=True)
     plt.show()
-#meanvel(5000)
+#meanvalue(2000, 100)
 
 
 def meanphase(iters, R=50, L=30):
@@ -177,7 +180,7 @@ def meanphase(iters, R=50, L=30):
     axs[0].set_ylabel("Mean gregarization")
     fig.suptitle(f"Does mean foraging efficiency reach a steady state? Parameters: {iters} iterations, {R} resouces, {L} locusts on 1x100 grid, probability of {locust.p}, threshold of {locust.K}", wrap = True)
     plt.show()
-meanphase(500000)
+#meanphase(500000)
 
 
 def comparemeanphase(iters, ran=10):

@@ -8,8 +8,10 @@ import matplotlib.patheffects as path_effects
 import copy
 np.random.seed(18)
 import json
+from scipy.spatial import distance
+import math
 
-def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 100, R = 50, cutoff = 10, G = 30, genData = False):
+def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, width = 5, numrows = 1, rowlen = 100, R = 50, cutoff = 10, G = 30):
     """
     Parameters
     --------------------------------
@@ -42,31 +44,16 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 10
             row.append(point)
         grid.append(row)
 
+    rlist=[]
     #distribute resources
     for i in range(len(grid)):
-        for r in range(R):
-            x = int(np.random.uniform()*rowlen)
-            grid[i][x].gainfood()
-
-
-    #redistribute the resources to have a more realistic distribution. Resources are placed near other resources
-    setuptime = 1000
-    for i in range(len(grid)):
-        for t in range(setuptime):
-            x = int(np.random.uniform()*rowlen)
-            if grid[i][x].hasfood():
-                grid[i][x].losefood()
-                y = int(np.random.uniform()*rowlen)
-                if grid[i][y].hasfood():
-                    d = np.random.binomial(rowlen,.5)
-                    if np.random.uniform() < .5:
-                        d = d*(-1) 
-                    m = (y+d) % rowlen
-                    grid[i][m].gainfood() 
-                else:
-                    grid[i][x].gainfood()
-
-    #note - should figure out some kind of clumpiness measure at some point
+        for j in range(2):
+            for r in range(R//2):
+                x = (rowlen//4)+j*(rowlen//2)
+                g = int(np.random.normal(x, width))%rowlen
+                grid[i][g].gainfood()
+                rlist.append(g)
+    locust.rlist=rlist
 
     #now we'll make a 2d list of locusts    
     locusts=[]
@@ -75,7 +62,7 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 10
         for g in range(G):
             x = int(np.random.uniform()*len(grid[i]))
             if len(Ks) == 0:
-                K=int(np.random.uniform()*50)
+                K=np.random.uniform()*50
             else:
                 K=Ks[g]
             #x=rowlen//2
@@ -104,7 +91,9 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 10
         cont=0
         gridr=[]
         locustr=[]
-        
+        gridr.append([x.resources for x in grid[0]])
+        locustr.append([[l.K, l.getefficiency()] for l in locusts[0]])
+
         #run through a single gen
         for i in range(iters):
             gridr.append([x.resources for x in grid[0]])
@@ -160,15 +149,22 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, numrows = 1, rowlen = 10
                 
                 for l in range(locust.N):
                     g=np.random.normal(locusts[r][l].K, locusts[r][l].K*drift)
-                    if g <0:
-                        g=0
+                    if g <= 0:
+                        g= 0.05
                     locusts[r][l].K = g
+    distances=[]
+    if gens > 1:
+        for g in range(1,gens):
+            a=[x[0] for x in locustData[g][iters-1]]
+            b=[x[0] for x in locustData[g-1][iters-1]]
+            d=distance.euclidean(a, b)
+            d=math.ceil(d*100)/100
+            distances.append(d)
+        
+        
+    return [locusts, grid, props, gridData, locustData, distances]
 
-        
-            
-        
-        
-    return [locusts, grid, props, gridData, locustData]
+
 
 def multplot(gens, iters, intervals, ran, load = 0, drift=.1):
     fig, axs = plt.subplots(intervals, ran)
@@ -178,31 +174,36 @@ def multplot(gens, iters, intervals, ran, load = 0, drift=.1):
             Ks=json.load(filehandle)
     klist=[]
     elist = []
+    dlist = []
     for r in range(ran):
-        R=100
+        width=10**r
         if len(Ks)>0:
-            o=simulate(Ks[r-5], gens, iters, drift, R=R)[4]
+            sim=simulate(Ks[r], gens=gens, iters=iters, width=width)
+            o=sim[4]
+            dlist.append(sim[5])
         else:
-            o=simulate(Ks, gens, iters, drift, R=R)[4]
+            sim=simulate(Ks, gens=gens, iters=iters, width=width)
+            o=sim[4]
+            dlist.append(sim[5])
         Kstr=[]
         effs = []
+        ds = []
         for g in range(gens):
             if g % (gens/intervals) == 0:
-                Kstr.append([x[0] for x in o[g][iters-1]])
+                Ktemp=[x[0] for x in o[g][iters-1]]
+                Kstr.append(Ktemp)
                 #effs.append([x[1] for x in o[g][iters-1]])
         for i in range(intervals):
             axs[i][r].scatter(range(locust.N), Kstr[i])
             axs[i][r].set_ylabel("Threshold")
-            axs[i][r].set_title(f"generation {i*(gens/intervals)}")
+            axs[i][r].set_title(f"generation {i*(gens/intervals)}, width={10**r}")
         klist.append(Kstr[intervals-1])
-    plt.setp(axs, ylim=(0,80))
+    plt.setp(axs, ylim=(0,200))
     with open('genalgdata.txt', 'w') as filehandle:
         json.dump(klist, filehandle)
     fig.suptitle(f"Variation in simulations. {gens} generations, {iters} iterations each. Params: {locust.N} locusts, {gridpoint.R} resources, probability of {locust.p}, drift of {drift}")
     plt.show()
 
-def takeSecond(elem):
-    return elem[1]
 
 def singplot(gens, iters, intervals, load=0, drift=.05):
     fig, axs = plt.subplots(intervals, 2)
@@ -228,7 +229,17 @@ def singplot(gens, iters, intervals, load=0, drift=.05):
     fig.suptitle(f"Change in threshold over {gens} generations, {iters} iterations each. Params: {locust.N} locusts, probability of {locust.p}")
     plt.show()
 
+def showresources(width):
+    o = simulate(gens=2,iters=1000, width=width)[3][1][999]
+    print(sum(o))
+    plt.scatter(range(locust.rowlen),o)
+    plt.title(f"resource distribution with width of {width}")
+    plt.ylim(0,30)
+    plt.xlabel("location")
+    plt.ylabel("resources")
+    plt.show()
+
 
 #function to run    
-multplot(250, 2000, 5, 5, 1)
+multplot(1000,2000,5,5,1)
 

@@ -1,4 +1,5 @@
 import numpy as np
+import random
 np.random.seed(18)
 class locust:
     #biological parameters. r is sensing range, K is gregarization threshold, and T is a time constant
@@ -19,6 +20,8 @@ class locust:
     ems=.005
     #probability of moving according to gregarization rules
     p=.6
+    #locations of resources for regeneration
+    rlist = []
     def __init__(self, place, group, K, phase = 0, contact=1, efficiency = 0):
         """Each locust's state variables are location, amount of resources consumed, length walked, group (control = 0 or gregarizing = 1), phase (solitary=0 or gregarious = 1), 
         contact level, and orientation (1 or -1)
@@ -108,15 +111,7 @@ class locust:
             self.phase = 0
 
     def regenerate(self, row, place):
-        x = int(np.random.uniform()*100)
-        i=0
-        while i < 15 and place.hasfood() == False:
-            x = x**2 % 100
-            i += 1
-        d = np.random.binomial(100,.5)
-        if np.random.uniform() < .5:
-            d = d*(-1) 
-        m = (x+d) % 100
+        m=random.sample(locust.rlist, 1)[0]
         row[m].gainfood()    
 
     def getefficiency(self):

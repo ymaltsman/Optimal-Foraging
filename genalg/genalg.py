@@ -92,12 +92,12 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, width = 5, numrows = 1, 
         gridr=[]
         locustr=[]
         gridr.append([x.resources for x in grid[0]])
-        locustr.append([[l.K, l.getefficiency()] for l in locusts[0]])
+        locustr.append([[l.K, l.getefficiency(), l.location, l.phase] for l in locusts[0]])
 
         #run through a single gen
         for i in range(iters):
             gridr.append([x.resources for x in grid[0]])
-            locustr.append([[l.K, l.getefficiency()] for l in locusts[0]])
+            locustr.append([[l.K, l.getefficiency(), l.location, l.phase] for l in locusts[0]])
             for r in range(len(locusts)):
                 for l in range(len(locusts[r])):
                     locusts[r][l].iterate(locusts[r], i, grid[r])
@@ -239,7 +239,42 @@ def showresources(width):
     plt.ylabel("resources")
     plt.show()
 
+def color(K):
+    r=0
+    g=0
+    b=0
+    if K < 10:
+        g=.8
+    elif K < 20:
+        b=.8
+    else:
+        r=.8
+    return (r, g, b)
+
+def lines(gens, iters, locusts = 30):
+    """tracking the location and contact level of multiple locusts over a generation
+    """
+    o = simulate(gens=gens,iters=iters, G=locusts)
+    locustData = o[4]
+    for l in range(locusts):
+        billx = []
+        billp =[]
+        for i in range(iters):
+            locustx = [x[2] for x in locustData[gens-1][i]]
+            billx.append(locustx[l])
+        K = [x[0] for x in locustData[gens-1][0]][l]
+        p = [x[3] for x in locustData[gens-1][0]][l]
+        c=color(K)
+        linestyle = '-' if p == 0 else '--'
+        plt.plot(range(iters), billx, linestyle=linestyle, color=c)
+        #axs[p].scatter(range(iters), billc)
+        #axs[p].set(ylabel=f'Contact level (orange), Location (blue)')
+    plt.xlabel(f'Time (seconds)')
+    plt.ylabel('position')
+    plt.title(f'Trajectory of {locusts} locusts over {iters} iterations. {gridpoint.R} resources, probability of {locust.p}. Red: K>20, Blue: 10<K<20, Green: K<10. Dotted means gregarious at the end.',wrap=True)
+    plt.show()
+
 
 #function to run    
-multplot(1000,2000,5,5,1)
+lines(50, 2000)
 

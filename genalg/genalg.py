@@ -254,6 +254,7 @@ def color(K):
 def lines(gens, iters, locusts = 30):
     """tracking the location and contact level of multiple locusts over a generation
     """
+    fig, axs = plt.subplots(2)
     o = simulate(gens=gens,iters=iters, G=locusts)
     locustData = o[4]
     for l in range(locusts):
@@ -263,18 +264,26 @@ def lines(gens, iters, locusts = 30):
             locustx = [x[2] for x in locustData[gens-1][i]]
             billx.append(locustx[l])
         K = [x[0] for x in locustData[gens-1][0]][l]
-        p = [x[3] for x in locustData[gens-1][0]][l]
+        p = [x[3] for x in locustData[gens-1][1]][l]
         c=color(K)
-        linestyle = '-' if p == 0 else '--'
-        plt.plot(range(iters), billx, linestyle=linestyle, color=c)
+        linestyle = '--' if p == 1 else ':'
+        axs[0].plot(range(iters), billx, linestyle=linestyle, color=c)
         #axs[p].scatter(range(iters), billc)
         #axs[p].set(ylabel=f'Contact level (orange), Location (blue)')
     plt.xlabel(f'Time (seconds)')
-    plt.ylabel('position')
-    plt.title(f'Trajectory of {locusts} locusts over {iters} iterations. {gridpoint.R} resources, probability of {locust.p}. Red: K>20, Blue: 10<K<20, Green: K<10. Dotted means gregarious at the end.',wrap=True)
+    axs[0].ylabel('position')
+    fig.suptitle(f'Trajectory of {locusts} locusts over {iters} iterations. {gridpoint.R} resources, probability of {locust.p}. Red: K>20, Blue: 10<K<20, Green: K<10. Dotted means gregarious at the end.',wrap=True)
+
+    for g in range(gens):
+        gphase = []
+        for i in range(iters):
+            locustp = sum([x[3] for x in o[g][i]])
+            gphase.append(locustp)
+        c=np.random.rand(3)
+        axs[1].plot(range(g*iters,g*iters+iters), gphase, color=c)
+    axs[1].ylabel("number of gregerized locusts")
     plt.show()
 
-
 #function to run    
-lines(50, 2000)
+lines(5, 2000)
 

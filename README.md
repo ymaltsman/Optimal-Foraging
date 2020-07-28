@@ -1,4 +1,5 @@
 # Optimal-Foraging
+<h3>Update 7/28/2020</h3>
 We find what seem to be bifurcations in the dynamics of the system as gamma and k are adjusted.
 We see in this image that gregarious locusts outperform solitary ones.
 <img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/kprebifurcation.jpg">

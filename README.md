@@ -1,17 +1,17 @@
 # Optimal-Foraging
-This is part of a research project with Prof. Andrew Bernoff, Prof. Jasper Weinburd, and other undergraduate students for the Mathematics department at Harvey Mudd College, investigating optimal foraging in locust swarms.
-
-<h3>Status Update for 6th July</h3>
-<p>It seems like very low thresholds are evolutionarily stable for both low resources and high resources.</p>
-<p>I ran five simulations with only 10 resources. This is how the populations evolved after ten generations:</p>
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/7_6run01.png">
-<p>And after about 500 generations:</p>
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/7_6run04.png">
-<p>Similarly, five simulations with 100 resources. The first 25 generations:</p>
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/hrun01.png">
-<p>And after about 300 generations:</p>
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/hrun3.png">
-
+We find what seem to be bifurcations in the dynamics of the system as gamma and k are adjusted.
+We see in this image that gregarious locusts outperform solitary ones.
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/kprebifurcation.jpg">
+When we increase k by .01, this switches pretty drastically:
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/kpostbifurcation.jpg">
+As we increase gamma, we would expect gregarious locusts to perform better, but instead the discrepency increases in favor of solitary locusts, with both groups' populations lower.
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/highergammabiggerchange.png">
+We increase gamma and the discrepancy increases even more.
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/gammaprebifurcation.jpg">
+BUT, there appears to be another bifurcation when we increases gamma by .01:
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/gammapostbif.jpg">
+And then if we decrease k by a bit, the discrepency switches in favor of gregarious locusts:
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/lowkgregwins.jpg">
 <h2>Background</h2>
 <p> A striking characteristic of locusts is that when they are repeatedly stimulated by other locusts, they undergo a behavioural and physiological phase change in which they become gregarious. This gregarization is a neccessary component for destructive locust swarms to form, which can include millions of locusts flying in unison. </p>
 <h2>Description</h2>

@@ -1,18 +1,13 @@
 # Optimal-Foraging
-<h3>Update 7/28/2020</h3>
-We find what seem to be bifurcations in the dynamics of the system as gamma and k are adjusted.
-We see in this image that gregarious locusts outperform solitary ones.
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/kprebifurcation.jpg">
-When we increase k by .01, this switches pretty drastically:
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/kpostbifurcation.jpg">
-As we increase gamma, we would expect gregarious locusts to perform better, but instead the discrepency increases in favor of solitary locusts, with both groups' populations lower.
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/highergammabiggerchange.png">
-We increase gamma and the discrepancy increases even more.
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/gammaprebifurcation.jpg">
-BUT, there appears to be another bifurcation when we increases gamma by .01:
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/gammapostbif.jpg">
-And then if we decrease k by a bit, the discrepency switches in favor of gregarious locusts:
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/lowkgregwins.jpg">
+<h3>Update 7/29/2020</h3>
+I've done a few explorations into parameter space, looking at how the maximum gregarious and solitary populations evolve as we tune individual parameters.
+<br>
+As we shift gamma:
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/gtest50.png">
+As we shift k (although realistically k should not be greater than 1:)
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/ktestbut.png">
+As we shift the initial gregarious population:
+<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/gregtest.png">
 <h2>Background</h2>
 <p> A striking characteristic of locusts is that when they are repeatedly stimulated by other locusts, they undergo a behavioural and physiological phase change in which they become gregarious. This gregarization is a neccessary component for destructive locust swarms to form, which can include millions of locusts flying in unison. </p>
 <h2>Description</h2>

@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+#insert the path to optimal-foraging\classes
 sys.path.insert(1,"C:\\Users\\yoni\\optimal-foraging\\classes")
 from fasterlocust import locust
 from gridpoint import gridpoint
@@ -15,13 +16,15 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, width = 5, numrows = 1, 
     """
     Parameters
     --------------------------------
+    Ks: a list of gregarization thresholds (can be empty to begin with, this is useful for running multiple simulationss)
     gens: number of generations
     iters: iterations per generations
+    drift: genetic drift
+    width: standard deviation parameter for the Gaussian distribution of resources
     numrows x rowlen: dimensions of grid
     R: number of resources
     cutoff: the number of locusts that die off and are born each generation
-    C, G: number of locusts in control and gregarizing groups, respectively
-    genData: a boolean that dictates whether or not generational level data about the grid will be stored and returned
+    G: number of locusts
 
     Outputs
     ---------------------------------
@@ -32,9 +35,11 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, width = 5, numrows = 1, 
     gridData: returns generational level grid data if set to true
     """
 
+    #pass simulation params to locust and gridpoint classes
     locust.N=G
     locust.rowlen=rowlen
     gridpoint.R = R
+
     #set up grid
     grid = []
     for i in range(numrows):
@@ -44,8 +49,8 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, width = 5, numrows = 1, 
             row.append(point)
         grid.append(row)
 
+    #initial distribution of resources
     rlist=[]
-    #distribute resources
     for i in range(len(grid)):
         for j in range(2):
             for r in range(R//2):
@@ -61,6 +66,7 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, width = 5, numrows = 1, 
         locustr=[]
         for g in range(G):
             x = int(np.random.uniform()*len(grid[i]))
+            #if Ks is empty, just randomly generate thresholds. Otherwise use that list
             if len(Ks) == 0:
                 K=np.random.uniform()*50
             else:
@@ -78,17 +84,12 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, width = 5, numrows = 1, 
     for r in range(len(locusts)):
         np.random.shuffle(locusts[r])
 
-    #one of the things that we can measure is the proportion of gregarizing locusts
-    props = []
-    props.append(G/locust.N)
     
     
-    #gridData will track the distribution of locusts and resources on the grid
+    #gridData, locustData will track the distribution of locusts and resources on the grid (currently set up for a single row grid)
     gridData = []
     locustData =[]
     for g in range(gens):
-        greg=0
-        cont=0
         gridr=[]
         locustr=[]
         gridr.append([x.resources for x in grid[0]])
@@ -103,6 +104,8 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, width = 5, numrows = 1, 
                     locusts[r][l].iterate(locusts[r], i, grid[r])
         gridData.append(gridr)
         locustData.append(locustr)
+
+        #reproduction, drift, etc.
         if gens > 1:
             for r in range(len(locusts)):
                 
@@ -147,11 +150,14 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, width = 5, numrows = 1, 
                 for loc in locusts[r]:
                     loc.reset(grid[r])
                 
+                #drift
                 for l in range(locust.N):
                     g=np.random.normal(locusts[r][l].K, locusts[r][l].K*drift)
                     if g <= 0:
                         g= 0.05
                     locusts[r][l].K = g
+
+    #compute distance between locusts in current generation and the generation before it by their gregarization thresholds
     distances=[]
     if gens > 1:
         for g in range(1,gens):
@@ -162,11 +168,15 @@ def simulate(Ks =[], gens = 1, iters = 20000, drift=.1, width = 5, numrows = 1, 
             distances.append(d)
         
         
-    return [locusts, grid, props, gridData, locustData, distances]
+    return [locusts, grid, gridData, locustData, distances]
 
 
 
 def multplot(gens, iters, intervals, ran, load = 0, drift=.1):
+    """plots ran simulations, plotting greg thresholds at each interval.
+    If load is set to 1, then gregarization thresholds from the previous run will be loaded into 
+    the current one. 
+    """
     fig, axs = plt.subplots(intervals, ran)
     Ks=[]
     if load == 1:
@@ -179,12 +189,12 @@ def multplot(gens, iters, intervals, ran, load = 0, drift=.1):
         width=10**r
         if len(Ks)>0:
             sim=simulate(Ks[r], gens=gens, iters=iters, width=width)
-            o=sim[4]
-            dlist.append(sim[5])
+            o=sim[3]
+            dlist.append(sim[4])
         else:
             sim=simulate(Ks, gens=gens, iters=iters, width=width)
-            o=sim[4]
-            dlist.append(sim[5])
+            o=sim[3]
+            dlist.append(sim[4])
         Kstr=[]
         effs = []
         ds = []
@@ -206,13 +216,17 @@ def multplot(gens, iters, intervals, ran, load = 0, drift=.1):
 
 
 def singplot(gens, iters, intervals, load=0, drift=.05):
+    """Plots a single simulation, plotting gregarization thresholds at each interval. 
+    If load is set to 1, then gregarization thresholds from the previous run will be loaded into 
+    the current one.
+    """
     fig, axs = plt.subplots(intervals, 2)
     Ks=[]
     Es=[]
     if load == 1:
         with open('singenalgdata.txt', 'r') as filehandle:
             Ks=json.load(filehandle)
-    o=simulate(Ks, gens, iters, drift)[4]
+    o=simulate(Ks, gens, iters, drift)[3]
     o=np.array(o)
     o = np.sort(o, axis=1)
     for g in range(gens):
@@ -230,7 +244,7 @@ def singplot(gens, iters, intervals, load=0, drift=.05):
     plt.show()
 
 def showresources(width):
-    o = simulate(gens=2,iters=1000, width=width)[3][1][999]
+    o = simulate(gens=2,iters=1000, width=width)[2][1][999]
     print(sum(o))
     plt.scatter(range(locust.rowlen),o)
     plt.title(f"resource distribution with width of {width}")
@@ -240,6 +254,8 @@ def showresources(width):
     plt.show()
 
 def color(K):
+    """Produces color based on gregarization threshold for lines()
+    """
     r=0
     g=0
     b=0
@@ -254,9 +270,8 @@ def color(K):
 def lines(gens, iters, locusts = 30):
     """tracking the location and contact level of multiple locusts over a generation
     """
-    fig, axs = plt.subplots(2)
     o = simulate(gens=gens,iters=iters, G=locusts)
-    locustData = o[4]
+    locustData = o[3]
     for l in range(locusts):
         billx = []
         billp =[]
@@ -267,21 +282,10 @@ def lines(gens, iters, locusts = 30):
         p = [x[3] for x in locustData[gens-1][1]][l]
         c=color(K)
         linestyle = '--' if p == 1 else ':'
-        axs[0].plot(range(iters), billx, linestyle=linestyle, color=c)
-        #axs[p].scatter(range(iters), billc)
-        #axs[p].set(ylabel=f'Contact level (orange), Location (blue)')
+        plt.plot(range(iters), billx, linestyle=linestyle, color=c)
     plt.xlabel(f'Time (seconds)')
-    axs[0].ylabel('position')
-    fig.suptitle(f'Trajectory of {locusts} locusts over {iters} iterations. {gridpoint.R} resources, probability of {locust.p}. Red: K>20, Blue: 10<K<20, Green: K<10. Dotted means gregarious at the end.',wrap=True)
-
-    for g in range(gens):
-        gphase = []
-        for i in range(iters):
-            locustp = sum([x[3] for x in o[g][i]])
-            gphase.append(locustp)
-        c=np.random.rand(3)
-        axs[1].plot(range(g*iters,g*iters+iters), gphase, color=c)
-    axs[1].ylabel("number of gregerized locusts")
+    plt.ylabel('position')
+    plt.title(f'Trajectory of {locusts} locusts over {iters} iterations. {gridpoint.R} resources, probability of {locust.p}. Red: K>20, Blue: 10<K<20, Green: K<10. Dotted means gregarious at the end.',wrap=True)
     plt.show()
 
 #function to run    

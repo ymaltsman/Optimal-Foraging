@@ -9,5 +9,6 @@ genalg/singenalgdata.txt
 genalg/genalgdata.txt
 
 bayesopt/logs.json
+bayesopt/_pycache_
 
 DEmodel/.ipynb_checkpoints

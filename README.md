@@ -1,13 +1,4 @@
 # Optimal-Foraging
-<h3>Update 7/29/2020</h3>
-I've done a few explorations into parameter space, looking at how the maximum gregarious and solitary populations evolve as we tune individual parameters.
-<br>
-As we shift gamma:
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/gtest50.png">
-As we shift k (although realistically k should not be greater than 1:)
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/ktestbut.png">
-As we shift the initial gregarious population:
-<img src="https://github.com/ymaltsman/Optimal-Foraging/raw/master/imgs/gregtest.png">
 <h2>Background</h2>
 <p> A striking characteristic of locusts is that when they are repeatedly stimulated by other locusts, they undergo a behavioural and physiological phase change in which they become gregarious. This gregarization is a neccessary component for destructive locust swarms to form, which can include millions of locusts flying in unison. </p>
 <h2>Description</h2>
